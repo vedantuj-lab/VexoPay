@@ -1,0 +1,215 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Unique user ID from Firebase Auth" },
+        "email": { "type": "string", "format": "email", "description": "User email address" },
+        "displayName": { "type": "string", "description": "User display name" },
+        "avatarUrl": { "type": "string", "description": "User avatar URL" },
+        "theme": { "type": "string", "enum": ["dark", "light"], "description": "UI theme preference" },
+        "currency": { "type": "string", "description": "Preferred currency" },
+        "language": { "type": "string", "enum": ["en", "hi", "mr"], "description": "Language preference" },
+        "twoFactorEnabled": { "type": "boolean" },
+        "biometricEnabled": { "type": "boolean" },
+        "membershipPlan": { "type": "string", "enum": ["basic", "pro", "elite"] },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Account creation timestamp" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Income or expense record",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "ID of the user who owns this transaction" },
+        "type": { "type": "string", "enum": ["income", "expense"], "description": "Type of transaction" },
+        "amount": { "type": "number", "description": "Transaction amount" },
+        "category": { "type": "string", "description": "Category (e.g., Food, Salary, Rent)" },
+        "date": { "type": "string", "format": "date", "description": "Date of transaction" },
+        "description": { "type": "string", "description": "Optional description" },
+        "attachmentUrl": { "type": "string", "description": "URL of attached receipt/PDF" },
+        "attachmentType": { "type": "string", "enum": ["image", "pdf"], "description": "Type of attachment" },
+        "studentId": { "type": "string", "description": "ID of related student account" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Record creation timestamp" }
+      },
+      "required": ["userId", "type", "amount", "category", "date"]
+    },
+    "Budget": {
+      "title": "Budget",
+      "description": "Monthly budget limit for a user",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "ID of the user who owns this budget" },
+        "monthlyLimit": { "type": "number", "description": "Total monthly budget limit" },
+        "monthlySavings": { "type": "number", "description": "Savings goal for the month" },
+        "categoryLimits": { 
+          "type": "object", 
+          "description": "Optional category-specific limits" 
+        },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp" }
+      },
+      "required": ["userId", "monthlyLimit"]
+    },
+    "Subscription": {
+      "title": "Subscription",
+      "description": "Recurring subscription record",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "ID of the user who owns this subscription" },
+        "provider": { "type": "string", "description": "Service provider (e.g., Netflix, Spotify)" },
+        "amount": { "type": "number", "description": "Subscription amount" },
+        "nextRenewal": { "type": "string", "format": "date-time", "description": "Next renewal date" },
+        "active": { "type": "boolean", "description": "Whether the subscription is currently active" },
+        "status": { "type": "string", "enum": ["paid", "pending", "overdue"], "description": "Payment status" },
+        "icon": { "type": "string", "description": "Icon identifier" }
+      },
+      "required": ["userId", "provider", "amount", "nextRenewal"]
+    },
+    "BankAccount": {
+      "title": "BankAccount",
+      "description": "Linked bank account for withdrawals",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Owner UID" },
+        "bankName": { "type": "string", "description": "Name of the bank" },
+        "accountNumber": { "type": "string", "description": "Masked account number" },
+        "isPrimary": { "type": "boolean", "description": "Default account for withdrawal" }
+      },
+      "required": ["userId", "bankName", "accountNumber"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "User notification",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Recipient UID" },
+        "title": { "type": "string", "description": "Notification title" },
+        "message": { "type": "string", "description": "Notification body text" },
+        "type": { "type": "string", "enum": ["info", "success", "warning", "error"] },
+        "isRead": { "type": "boolean", "description": "Viewed status" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "title", "message", "type", "isRead"]
+    },
+    "StudentAccount": {
+      "title": "StudentAccount",
+      "description": "Sub-account for student",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Parent UID" },
+        "name": { "type": "string", "description": "Student name" },
+        "studentId": { "type": "string", "description": "Institutional ID" },
+        "balance": { "type": "number", "description": "Available balance" },
+        "avatarUrl": { "type": "string" }
+      },
+      "required": ["userId", "name", "studentId", "balance"]
+    },
+    "Card": {
+      "title": "Card",
+      "description": "User's debit or credit card",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "cardHolderName": { "type": "string" },
+        "cardNumber": { "type": "string", "description": "Masked card number" },
+        "expiryDate": { "type": "string" },
+        "cardType": { "type": "string", "enum": ["debit", "credit", "other"] },
+        "bankName": { "type": "string" },
+        "balance": { "type": "number" },
+        "limit": { "type": "number" }
+      },
+      "required": ["userId", "cardHolderName", "cardNumber", "cardType"]
+    },
+    "CalendarNote": {
+      "title": "CalendarNote",
+      "description": "A note or message for a specific date",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "date": { "type": "string", "format": "date", "description": "YYYY-MM-DD" },
+        "message": { "type": "string" },
+        "type": { "type": "string", "enum": ["important", "task", "reminder", "other"] }
+      },
+      "required": ["userId", "date", "message", "type"]
+    },
+    "Loan": {
+      "title": "Loan",
+      "description": "User loan application",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "type": { "type": "string", "enum": ["housing", "education", "vehicle", "travel", "personal"] },
+        "amount": { "type": "number" },
+        "interestRate": { "type": "number" },
+        "tenure": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "active", "closed", "rejected"] },
+        "bankName": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "type", "amount", "status"]
+    },
+    "BankOffer": {
+      "title": "BankOffer",
+      "description": "Available bank offers",
+      "type": "object",
+      "properties": {
+        "bankName": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "type": { "type": "string", "enum": ["loan", "card", "savings"] },
+        "interestRate": { "type": "number" },
+        "validUntil": { "type": "string", "format": "date-time" }
+      },
+      "required": ["bankName", "title", "type"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile documents"
+    },
+    "/transactions/{transactionId}": {
+      "schema": "Transaction",
+      "description": "Collection of all transactions"
+    },
+    "/budgets/{userId}": {
+      "schema": "Budget",
+      "description": "User budget settings"
+    },
+    "/subscriptions/{subId}": {
+      "schema": "Subscription",
+      "description": "Collection of recurring subscriptions"
+    },
+    "/banks/{bankId}": {
+      "schema": "BankAccount",
+      "description": "Linked bank accounts"
+    },
+    "/notifications/{notifId}": {
+      "schema": "Notification",
+      "description": "User notifications"
+    },
+    "/students/{studentId}": {
+      "schema": "StudentAccount",
+      "description": "Student profiles"
+    },
+    "/cards/{cardId}": {
+      "schema": "Card",
+      "description": "User's credit/debit cards"
+    },
+    "/calendar_notes/{noteId}": {
+      "schema": "CalendarNote",
+      "description": "Calendar annotations"
+    },
+    "/loans/{loanId}": {
+      "schema": "Loan",
+      "description": "User loans"
+    },
+    "/bank_offers/{offerId}": {
+      "schema": "BankOffer",
+      "description": "Promotional bank offers"
+    }
+  }
+}
